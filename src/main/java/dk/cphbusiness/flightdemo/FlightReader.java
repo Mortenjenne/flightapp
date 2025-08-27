@@ -32,6 +32,7 @@ public class FlightReader {
 
            //Add a new feature (e.g. calculate the average flight time for a specific airline.
             // For example, calculate the average flight time for all flights operated by Lufthansa)
+            calculateTotalAverageForAirlineOperator(flightInfoDTOList,"Lufthansa");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,11 +90,23 @@ public class FlightReader {
         long minutes = totalFlightTime % 60;
 
         System.out.println("Total flight time for " + airlineCompany + ": " + hours + "h " + minutes + "m");
-
-
-
-
-
     }
+
+    private static void calculateTotalAverageForAirlineOperator(List<FlightInfoDTO> flightInfoDTOList, String airlineCompany){
+        Double totalFlightTime = flightInfoDTOList.stream()
+                .filter(airline -> airline.getAirline() != null &&
+                        airline.getDestination() != null &&
+                        airline.getOrigin() != null &&
+                        airline.getAirline().equals(airlineCompany))
+                .collect(Collectors.averagingLong(flight -> flight.getDuration().toMinutes()));
+
+
+        Double hours =  totalFlightTime / 60;
+        Double minutes = totalFlightTime % 60;
+
+        System.out.printf("Average flight time for %s: %.0f hours and %.0f minutes",airlineCompany,hours,minutes);
+    }
+
+
 
 }
