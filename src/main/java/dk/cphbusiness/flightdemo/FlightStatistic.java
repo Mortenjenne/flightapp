@@ -1,4 +1,6 @@
-package dk.cphbusiness.flightdemo.dtos;
+package dk.cphbusiness.flightdemo;
+
+import dk.cphbusiness.flightdemo.dtos.FlightInfoDTO;
 
 import java.time.Duration;
 import java.time.LocalTime;

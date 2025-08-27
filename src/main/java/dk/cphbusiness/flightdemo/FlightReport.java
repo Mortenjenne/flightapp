@@ -1,4 +1,4 @@
-package dk.cphbusiness.flightdemo.dtos;
+package dk.cphbusiness.flightdemo;
 
 import java.time.Duration;
 import java.util.Map;
