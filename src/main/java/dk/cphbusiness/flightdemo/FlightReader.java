@@ -30,6 +30,9 @@ public class FlightReader {
             //Calculate total flight time for a specifc airline (for all flights operated by Lufthansa)
            calculateTotalForAirlineOperator(flightInfoDTOList,"Lufthansa");
 
+           //Add a new feature (e.g. calculate the average flight time for a specific airline.
+            // For example, calculate the average flight time for all flights operated by Lufthansa)
+
         } catch (IOException e) {
             e.printStackTrace();
         }
