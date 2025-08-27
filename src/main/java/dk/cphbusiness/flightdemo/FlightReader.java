@@ -7,9 +7,7 @@ import dk.cphbusiness.utils.Utils;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,10 +36,22 @@ public class FlightReader {
             List<FlightInfoDTO> flightsOperationsBetweenAirports = getFlightsOperatingBetweenTowAirports(flightInfoDTOList,"Pulkovo","Kurumoch");
             flightsOperationsBetweenAirports.forEach(System.out::println);
 
+            System.out.println("########################################");
+
+            //Add a new feature (make a list of flights that leaves before a specific time in the day/night)
+            List<FlightInfoDTO> flightsLeavingBeforeSpecificTime = getFlightsLeavingAtSpecificTime(flightInfoDTOList, LocalTime.of(1, 0));
+            //flightsLeavingBeforeSpecificTime.forEach(System.out::println);
+
+            //Add a new feature (calculate the average flight time for each airline)
+            Map<String,Double> averageFlightTimeForEachAirline = getAverageFlightTime(flightInfoDTOList);
+            System.out.println(averageFlightTimeForEachAirline);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 
     public static List<FlightDTO> getFlightsFromFile(String filename) throws IOException {
 
@@ -116,6 +126,23 @@ public class FlightReader {
                 .filter(airline -> airline.getOrigin() != null && airline.getDestination() != null && airline.getOrigin().equals(airport1) && airline.getDestination().equals(airport2) || airline.getOrigin() != null && airline.getDestination() != null && airline.getOrigin().equals(airport2) && airline.getDestination().equals(airport1))
                 .collect(Collectors.toList());
         return flights;
+    }
+
+    private static List<FlightInfoDTO> getFlightsLeavingAtSpecificTime(List<FlightInfoDTO> flightInfoDTOList, LocalTime time) {
+        List<FlightInfoDTO> flights = flightInfoDTOList.stream()
+                .filter(flight -> flight.getDeparture().toLocalTime().isBefore(time))
+                .collect(Collectors.toList());
+
+        return flights;
+    }
+
+    private static Map<String, Double> getAverageFlightTime(List<FlightInfoDTO> flightInfoDTOList) {
+        Map<String,Double> averageFlightTimes = flightInfoDTOList.stream()
+                .collect(Collectors.groupingBy(
+                        FlightInfoDTO::getAirline,
+                        Collectors.averagingDouble(value -> value.getDuration().toMinutes())
+                ));
+        return averageFlightTimes;
     }
 
 
