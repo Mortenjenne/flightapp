@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Purpose:
@@ -22,7 +24,12 @@ public class FlightReader {
         try {
             List<FlightDTO> flightList = getFlightsFromFile("flights.json");
             List<FlightInfoDTO> flightInfoDTOList = getFlightInfoDetails(flightList);
-            flightInfoDTOList.forEach(System.out::println);
+            //1 Print all flights
+            //flightInfoDTOList.forEach(System.out::println);
+
+            //Calculate total flight time for a specifc airline (for all flights operated by Lufthansa)
+           calculateTotalForAirlineOperator(flightInfoDTOList,"Lufthansa");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,6 +69,28 @@ public class FlightReader {
             })
         .toList();
         return flightInfoList;
+    }
+
+    private static void calculateTotalForAirlineOperator(List<FlightInfoDTO> flightInfoDTOList, String airlineCompany){
+        Long totalFlightTime = flightInfoDTOList.stream()
+                .filter(airline -> airline.getAirline() != null &&
+                        airline.getDestination() != null &&
+                                airline.getOrigin() != null &&
+                        airline.getAirline().equals(airlineCompany))
+                .mapToLong(flight -> flight.getDuration().toMinutes())
+                .sum();
+
+        System.out.println(totalFlightTime);
+
+        long hours = totalFlightTime / 60;
+        long minutes = totalFlightTime % 60;
+
+        System.out.println("Total flight time for " + airlineCompany + ": " + hours + "h " + minutes + "m");
+
+
+
+
+
     }
 
 }
