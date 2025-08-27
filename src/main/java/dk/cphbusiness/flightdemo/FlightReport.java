@@ -13,10 +13,26 @@ public class FlightReport {
         System.out.println("Average flight time for " + airline + " " + formatDouble(flightTime));
     }
 
-    public void printAverageFlightTimeForEachAirline(Map<String,Double> airlines){
+    public void printAverageFlightTimeForEachAirline(Map<String,Double> airlines) {
         airlines.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
-                .forEach(f -> System.out.println("Airline: " + f.getKey() + ", Average flight time: " + formatDouble(f.getValue())));
+                .forEach(f -> {
+                    long totalMinutes = Math.round(f.getValue());
+                    long hours = totalMinutes / 60;
+                    long minutes = totalMinutes % 60;
+                    System.out.println("Airline: " + f.getKey() + ", Average flight time: " + hours + " h " + minutes + " m");
+                });
+    }
+
+    public void printTotalFlightTimeForEachAirline(Map<String,Double> airlines) {
+        airlines.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .forEach(f -> {
+                    long totalMinutes = Math.round(f.getValue());
+                    long hours = totalMinutes / 60;
+                    long minutes = totalMinutes % 60;
+                    System.out.println("Airline: " + f.getKey() + ", Total flight time: " + hours + " h " + minutes + " m");
+                });
     }
 
     private String formatDuration(Duration d){

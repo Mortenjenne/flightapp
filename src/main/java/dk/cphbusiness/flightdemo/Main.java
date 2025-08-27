@@ -37,12 +37,29 @@ public class Main {
         System.out.println("#########################");
 
         //Add a new feature (make a list of flights that leaves before a specific time in the day/night)
-        List<FlightInfoDTO> flightsLeavingBeforeSpecificTime = statistic.getFlightsLeavingAtSpecificTime(flightInfoDTOList, LocalTime.of(1, 0));
-        //flightsLeavingBeforeSpecificTime.forEach(System.out::println);
+        List<FlightInfoDTO> flightsLeavingBeforeSpecificTime = statistic.getFlightsLeavingBefore(flightInfoDTOList, LocalTime.of(1, 0));
+        flightsLeavingBeforeSpecificTime.forEach(System.out::println);
         System.out.println("#########################");
 
         //Add a new feature (calculate the average flight time for each airline)
         Map<String, Double> averageFlightTimeForEachAirline = statistic.getAverageFlightTime(flightInfoDTOList);
         report.printAverageFlightTimeForEachAirline(averageFlightTimeForEachAirline);
+        System.out.println("#########################");
+
+        //Add a new feature (make a list of all flights sorted by arrival time)
+        List<FlightInfoDTO> sortedFlights = statistic.sortListByArrivalTime(flightInfoDTOList);
+        sortedFlights.forEach(System.out::println);
+        System.out.println("#########################");
+
+        //Add a new feature (calculate the total flight time for each airline)
+        Map<String, Double> totalFlightTimeForEachAirline = statistic.getTotalFlightTime(flightInfoDTOList);
+        report.printTotalFlightTimeForEachAirline(totalFlightTimeForEachAirline);
+        System.out.println("#########################");
+
+        //Add a new feature (make a list of all flights sorted by duration)
+        List<FlightInfoDTO> flightsSortedByDuration = statistic.sortListByDuration(flightInfoDTOList);
+        flightsSortedByDuration.forEach(System.out::println);
+
+
     }
 }
