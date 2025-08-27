@@ -18,42 +18,23 @@ import java.util.stream.Collectors;
  */
 public class FlightReader {
 
-    public static void main(String[] args) {
+    public List<FlightInfoDTO> getFlightInfoDTOList() {
+        List<FlightInfoDTO> flightInfoDTOList = new ArrayList<>();
+
         try {
             List<FlightDTO> flightList = getFlightsFromFile("flights.json");
-            List<FlightInfoDTO> flightInfoDTOList = getFlightInfoDetails(flightList);
-            //1 Print all flights
-            //flightInfoDTOList.forEach(System.out::println);
-
-            //Calculate total flight time for a specifc airline (for all flights operated by Lufthansa)
-           calculateTotalForAirlineOperator(flightInfoDTOList,"Lufthansa");
-
-           //Add a new feature (e.g. calculate the average flight time for a specific airline.
-            // For example, calculate the average flight time for all flights operated by Lufthansa)
-            calculateTotalAverageForAirlineOperator(flightInfoDTOList,"Lufthansa");
-
-            //Add a new feature (make a list of flights that are operated between two specific airports
-            List<FlightInfoDTO> flightsOperationsBetweenAirports = getFlightsOperatingBetweenTowAirports(flightInfoDTOList,"Pulkovo","Kurumoch");
-            flightsOperationsBetweenAirports.forEach(System.out::println);
-
-            System.out.println("########################################");
-
-            //Add a new feature (make a list of flights that leaves before a specific time in the day/night)
-            List<FlightInfoDTO> flightsLeavingBeforeSpecificTime = getFlightsLeavingAtSpecificTime(flightInfoDTOList, LocalTime.of(1, 0));
-            //flightsLeavingBeforeSpecificTime.forEach(System.out::println);
-
-            //Add a new feature (calculate the average flight time for each airline)
-            Map<String,Double> averageFlightTimeForEachAirline = getAverageFlightTime(flightInfoDTOList);
-            System.out.println(averageFlightTimeForEachAirline);
+            flightInfoDTOList = getFlightInfoDetails(flightList);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return flightInfoDTOList;
     }
 
 
 
-    public static List<FlightDTO> getFlightsFromFile(String filename) throws IOException {
+
+    public  List<FlightDTO> getFlightsFromFile(String filename) throws IOException {
 
         ObjectMapper objectMapper = Utils.getObjectMapper();
 
@@ -65,7 +46,7 @@ public class FlightReader {
         return flightsList;
     }
 
-    public static List<FlightInfoDTO> getFlightInfoDetails(List<FlightDTO> flightList) {
+    public  List<FlightInfoDTO> getFlightInfoDetails(List<FlightDTO> flightList) {
         List<FlightInfoDTO> flightInfoList = flightList.stream()
            .map(flight -> {
                 LocalDateTime departure = flight.getDeparture().getScheduled();
@@ -89,61 +70,7 @@ public class FlightReader {
         return flightInfoList;
     }
 
-    private static void calculateTotalForAirlineOperator(List<FlightInfoDTO> flightInfoDTOList, String airlineCompany){
-        Long totalFlightTime = flightInfoDTOList.stream()
-                .filter(airline -> airline.getAirline() != null &&
-                        airline.getDestination() != null &&
-                                airline.getOrigin() != null &&
-                        airline.getAirline().equals(airlineCompany))
-                .mapToLong(flight -> flight.getDuration().toMinutes())
-                .sum();
 
-        System.out.println(totalFlightTime);
-
-        long hours = totalFlightTime / 60;
-        long minutes = totalFlightTime % 60;
-
-        System.out.println("Total flight time for " + airlineCompany + ": " + hours + "h " + minutes + "m");
-    }
-
-    private static void calculateTotalAverageForAirlineOperator(List<FlightInfoDTO> flightInfoDTOList, String airlineCompany){
-        Double totalFlightTime = flightInfoDTOList.stream()
-                .filter(airline -> airline.getAirline() != null &&
-                        airline.getDestination() != null &&
-                        airline.getOrigin() != null &&
-                        airline.getAirline().equals(airlineCompany))
-                .collect(Collectors.averagingLong(flight -> flight.getDuration().toMinutes()));
-
-
-        Double hours =  totalFlightTime / 60;
-        Double minutes = totalFlightTime % 60;
-
-        System.out.printf("Average flight time for %s: %.0f hours and %.0f minutes",airlineCompany,hours,minutes);
-    }
-
-    private static List<FlightInfoDTO> getFlightsOperatingBetweenTowAirports(List<FlightInfoDTO> flightInfoDTOList, String airport1, String airport2) {
-        List<FlightInfoDTO> flights = flightInfoDTOList.stream()
-                .filter(airline -> airline.getOrigin() != null && airline.getDestination() != null && airline.getOrigin().equals(airport1) && airline.getDestination().equals(airport2) || airline.getOrigin() != null && airline.getDestination() != null && airline.getOrigin().equals(airport2) && airline.getDestination().equals(airport1))
-                .collect(Collectors.toList());
-        return flights;
-    }
-
-    private static List<FlightInfoDTO> getFlightsLeavingAtSpecificTime(List<FlightInfoDTO> flightInfoDTOList, LocalTime time) {
-        List<FlightInfoDTO> flights = flightInfoDTOList.stream()
-                .filter(flight -> flight.getDeparture().toLocalTime().isBefore(time))
-                .collect(Collectors.toList());
-
-        return flights;
-    }
-
-    private static Map<String, Double> getAverageFlightTime(List<FlightInfoDTO> flightInfoDTOList) {
-        Map<String,Double> averageFlightTimes = flightInfoDTOList.stream()
-                .collect(Collectors.groupingBy(
-                        FlightInfoDTO::getAirline,
-                        Collectors.averagingDouble(value -> value.getDuration().toMinutes())
-                ));
-        return averageFlightTimes;
-    }
 
 
 
