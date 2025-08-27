@@ -34,6 +34,10 @@ public class FlightReader {
             // For example, calculate the average flight time for all flights operated by Lufthansa)
             calculateTotalAverageForAirlineOperator(flightInfoDTOList,"Lufthansa");
 
+            //Add a new feature (make a list of flights that are operated between two specific airports
+            List<FlightInfoDTO> flightsOperationsBetweenAirports = getFlightsOperatingBetweenTowAirports(flightInfoDTOList,"Pulkovo","Kurumoch");
+            flightsOperationsBetweenAirports.forEach(System.out::println);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -105,6 +109,13 @@ public class FlightReader {
         Double minutes = totalFlightTime % 60;
 
         System.out.printf("Average flight time for %s: %.0f hours and %.0f minutes",airlineCompany,hours,minutes);
+    }
+
+    private static List<FlightInfoDTO> getFlightsOperatingBetweenTowAirports(List<FlightInfoDTO> flightInfoDTOList, String airport1, String airport2) {
+        List<FlightInfoDTO> flights = flightInfoDTOList.stream()
+                .filter(airline -> airline.getOrigin() != null && airline.getDestination() != null && airline.getOrigin().equals(airport1) && airline.getDestination().equals(airport2) || airline.getOrigin() != null && airline.getDestination() != null && airline.getOrigin().equals(airport2) && airline.getDestination().equals(airport1))
+                .collect(Collectors.toList());
+        return flights;
     }
 
 
